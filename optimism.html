@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Optimism RPC</title>
+<script>
+  window.addEventListener('load', (event) => {
+    // Function to switch to Mainnet
+    const switchToEthereumMainnet = async () => {
+      try {
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+          // Mainnet parameters
+          const chainId = '0xa'; // Hexadecimal representation of 1
+
+          // Try to switch to Mainnet
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }],
+          });
+        } else {
+          alert('MetaMask is not installed. Please install it to use this feature.');
+        }
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            // Add Mainnet to MetaMask
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0xa',
+                chainName: 'Optimism',
+                nativeCurrency: {
+                    name: 'ETH',
+                    symbol: 'ETH',
+                    decimals: 18
+                },
+                rpcUrls: ['https://mainnet.optimism.io/'],
+                blockExplorerUrls: ['https://explorer.optimism.io/']
+              }],
+            });
+          } catch (addError) {
+            console.error('Failed to add the Optimism Mainnet:', addError);
+          }
+        } else {
+          console.error('Failed to switch to the Optimism Mainnet:', switchError);
+        }
+      }
+    };
+
+    // Call the function to switch to Mainnet
+    switchToEthereumMainnet();
+  });
+</script>
+</head>
+<body>
+<h1>Switch to Optimism</h1>
+<p>Attempting to switch your MetaMask network to Optimism...</p>
+</body>
+</html>

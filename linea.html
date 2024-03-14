@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Linea RPC</title>
+<script>
+  window.addEventListener('load', (event) => {
+    // Function to switch to Ethereum Mainnet
+    const switchToEthereumMainnet = async () => {
+      try {
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+          // Ethereum Mainnet parameters
+          const chainId = '0xe708'; // Hexadecimal representation of 1
+
+          // Try to switch to Ethereum Mainnet
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }],
+          });
+        } else {
+          alert('MetaMask is not installed. Please install it to use this feature.');
+        }
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            // Add Ethereum Mainnet to MetaMask
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0xe708',
+                chainName: 'Linea',
+                nativeCurrency: {
+                    name: 'ETH',
+                    symbol: 'ETH',
+                    decimals: 18
+                },
+                rpcUrls: ['https://rpc.linea.build/'],
+                blockExplorerUrls: ['https://lineascan.build/']
+              }],
+            });
+          } catch (addError) {
+            console.error('Failed to add the Linea Mainnet:', addError);
+          }
+        } else {
+          console.error('Failed to switch to the Linea Mainnet:', switchError);
+        }
+      }
+    };
+
+    // Call the function to switch to Ethereum Mainnet
+    switchToEthereumMainnet();
+  });
+</script>
+</head>
+<body>
+<h1>Switch to Linea</h1>
+<p>Attempting to switch your MetaMask network to Linea...</p>
+</body>
+</html>

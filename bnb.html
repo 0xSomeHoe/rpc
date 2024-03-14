@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BNB Smart Chain Mainnet RPC</title>
+<script>
+  window.addEventListener('load', (event) => {
+    // Function to switch to Mainnet
+    const switchToEthereumMainnet = async () => {
+      try {
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+          // Mainnet parameters
+          const chainId = '0x38'; // Hexadecimal representation of 1
+
+          // Try to switch to Mainnet
+          await window.ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: chainId }],
+          });
+        } else {
+          alert('MetaMask is not installed. Please install it to use this feature.');
+        }
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask
+        if (switchError.code === 4902) {
+          try {
+            // Add Mainnet to MetaMask
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x38',
+                chainName: 'BNB Smart Chain Mainnet',
+                nativeCurrency: {
+                    name: 'BNB',
+                    symbol: 'BNB',
+                    decimals: 18
+                },
+                rpcUrls: ['https://bsc-dataseed1.defibit.io/'],
+                blockExplorerUrls: ['https://bscscan.com/']
+              }],
+            });
+          } catch (addError) {
+            console.error('Failed to add the BNB Smart Chain Mainnet Mainnet:', addError);
+          }
+        } else {
+          console.error('Failed to switch to the BNB Smart Chain Mainnet Mainnet:', switchError);
+        }
+      }
+    };
+
+    // Call the function to switch to Mainnet
+    switchToEthereumMainnet();
+  });
+</script>
+</head>
+<body>
+<h1>Switch to BNB Smart Chain Mainnet</h1>
+<p>Attempting to switch your MetaMask network to BNB Smart Chain Mainnet...</p>
+</body>
+</html>
