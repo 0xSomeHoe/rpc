@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add and Switch Networks in MetaMask</title>
+<style>
+    /* Simple modal styling */
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        padding-top: 60px;
+    }
 
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+  .orb{
+  background: #F77D24;
+  display: inline-block;
+  color: #fff;
+  text-decoration: none;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-size: 16px;
+  i{
+    display:inline-block;
+    border-left: 1px solid rgba(255,255,255,0.35);
+    padding: 15px;
+    margin-left: 15px;
+  }
+}
+</style>
+</head>
+<body>
+<button class="orb" id="ethereumButton"><a>Ethereum</a></button>
+<button class="orb" id="bnbButton"><a>BNB Chain</a></button>
+<button class="orb" id="polygonButton"><a>Polygon</a></button>
+<button class="orb" id="avalancheButton"><a>Avalanche</a></button>
+<button class="orb" id="arbitrumButton"><a>Arbitrum</a></button>
+<button class="orb" id="lineaButton"><a>Linea</a></button>
+<button class="orb" id="optimismButton"><a>Optimism</a></button>
+<button class="orb" id="zksynceraButton"><a>zkSync Era</a></button>
+<button class="orb" id="scrollButton"><a>Scroll</a></button>
+<button class="orb" id="baseButton"><a>Base</a></button>
+<button class="orb" id="zoraButton"><a>Zora</a></button>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <p id="modalText">Some text in the Modal..</p>
+  </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', async () => {
+    if (typeof window.ethereum !== 'undefined') {
+        const ethereum = window.ethereum;
+        const modal = document.getElementById("myModal");
+        const span = document.getElementsByClassName("close")[0];
+        const modalText = document.getElementById("modalText");
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        async function showMessage(message) {
+            modalText.innerText = message;
+            modal.style.display = "block";
+        }
+
+        // Function addOrSwitchNetwork updated to use showMessage for displaying messages
+        async function addOrSwitchNetwork(chainId, chainName, nativeCurrency, rpcUrl, blockExplorerUrl) {
+    try {
+        const currentChainId = ethereum.chainId;
+        if (currentChainId === chainId) {
+            // If already on the correct network, show message and return
+            showMessage(`${chainName} chain is already active.`);
+            return;
+        }
+
+        await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId }]
+        }).then(() => {
+            showMessage(`${chainName} chain is already active.`);
+        }).catch(async (switchError) => {
+            if (switchError.code === 4902) {
+                await ethereum.request({
+                    method: 'wallet_addEthereumChain',
+                    params: [{
+                        chainId,
+                        chainName,
+                        nativeCurrency,
+                        rpcUrls: [rpcUrl],
+                        blockExplorerUrls: [blockExplorerUrl]
+                    }]
+                });
+                console.log(`Added ${chainName} network to MetaMask.`);
+                // Optionally add a delay here if necessary
+            } else {
+                throw switchError;
+            }
+        });
+        console.log(`Switched to ${chainName} network.`);
+    } catch (error) {
+        console.error("Error:", error);
+    }
+}
+
+
+        // Add event listeners for each button
+        document.getElementById('ethereumButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x1',
+                'Ethereum',
+                { name: 'Ethereum', symbol: 'ETH', decimals: 18 },
+                'https://rpc.ankr.com/eth',
+                'https://etherscan.io/'
+            );
+        });
+
+        document.getElementById('bnbButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x38',
+                'BNB Chain',
+                { name: 'Binance Coin', symbol: 'BNB', decimals: 18 },
+                'https://bsc-dataseed1.defibit.io/',
+                'https://bscscan.com/'
+            );
+        });
+
+        document.getElementById('polygonButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x89',
+                'Polygon',
+                { name: 'MATIC', symbol: 'MATIC', decimals: 18 },
+                'https://polygon-rpc.com/',
+                'https://polygonscan.com/'
+            );
+        });
+
+        document.getElementById('avalancheButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0xa86a',
+                'Avalanche',
+                { name: 'AVAX', symbol: 'AVAX', decimals: 18 },
+                'https://api.avax.network/ext/bc/C/rpc',
+                'https://snowtrace.io/'
+            );
+        });
+
+        document.getElementById('arbitrumButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0xa4b1',
+                'Arbitrum',
+                { name: 'Arbitrum', symbol: 'ARB', decimals: 18 },
+                'https://arb1.arbitrum.io/rpc',
+                'https://arbiscan.io/'
+            );
+        });
+
+        document.getElementById('lineaButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0xe708',
+                'Linea',
+                { name: 'Linea', symbol: 'ETH', decimals: 18 },
+                'https://rpc.linea.build/',
+                'https://lineascan.build'
+            );
+        });
+      
+        document.getElementById('optimismButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0xa',
+                'Optimism',
+                { name: 'Optimism', symbol: 'ETH', decimals: 18 },
+                'https://mainnet.optimism.io/',
+                'https://explorer.optimism.io/'
+            );
+        });
+      
+      document.getElementById('zksynceraButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x144',
+                'zkSync Era',
+                { name: 'zkSync Era', symbol: 'ETH', decimals: 18 },
+                'https://mainnet.era.zksync.io/',
+                'https://explorer.zksync.io/'
+            );
+        });
+      
+      document.getElementById('scrollButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x82750',
+                'Scroll',
+                { name: 'Scroll', symbol: 'ETH', decimals: 18 },
+                'https://rpc.scroll.io/',
+                'https://scrollscan.com/'
+            );
+        });
+      
+      document.getElementById('baseButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x2105',
+                'Base',
+                { name: 'Base', symbol: 'ETH', decimals: 18 },
+                'https://mainnet.base.org/',
+                'https://basescan.org/'
+            );
+        });
+      
+      document.getElementById('zoraButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x76adf1',
+                'Zora',
+                { name: 'Zora', symbol: 'ETH', decimals: 18 },
+                'https://rpc.zora.energy/',
+                'https://explorer.zora.energy/'
+            );
+        });
+        
+    } else {
+        alert("MetaMask is not installed. Please install MetaMask to add and switch networks.");
+    }
+});
+</script>
+</body>
+</html>
