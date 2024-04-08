@@ -72,6 +72,7 @@
 <button class="orb" id="scrollButton"><a>Scroll</a></button>
 <button class="orb" id="baseButton"><a>Base</a></button>
 <button class="orb" id="zoraButton"><a>Zora</a></button>
+<button class="orb" id="karakButton"><a>Karak</a></button>
 
 <div id="myModal" class="modal">
   <div class="modal-content">
@@ -252,6 +253,17 @@ window.addEventListener('DOMContentLoaded', async () => {
                 'https://explorer.zora.energy/'
             );
         });
+        
+        document.getElementById('karakButton').addEventListener('click', async () => {
+            await addOrSwitchNetwork(
+                '0x96a',
+                'Karak',
+                { name: 'Karak', symbol: 'ETH', decimals: 18 },
+                'https://rpc.karak.network/',
+                'https://explorer.karak.network/'
+            );
+        });
+      
         
     } else {
         alert("MetaMask is not installed. Please install MetaMask to add and switch networks.");
